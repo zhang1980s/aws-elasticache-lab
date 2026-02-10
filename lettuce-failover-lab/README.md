@@ -179,6 +179,19 @@ data:
   LETTUCE_PROFILE: "aggressive"
 ```
 
+### Lettuce Version (6.3.2 vs 6.3.1)
+
+This lab uses Lettuce 6.3.2. The version difference from 6.3.1 does **not significantly impact failover test results**.
+
+| Change in 6.3.2 | Impact on Lab |
+|-----------------|---------------|
+| Protected mode reconnect fix | None - ElastiCache doesn't use protected mode |
+| HashedWheelTimer for timeouts | Minor - slightly more consistent timeout handling |
+| ConcurrentLinkedQueue optimization | Minor - performance improvement only |
+| ByteBuf encoding optimization | Minor - ~10x encoding performance, no failover impact |
+
+Core failover mechanisms (topology refresh, adaptive triggers, reconnection logic) are identical between 6.3.1 and 6.3.2.
+
 ### Workload Configuration
 
 Configure via `k8s/configmaps/workload-config.yaml`:
