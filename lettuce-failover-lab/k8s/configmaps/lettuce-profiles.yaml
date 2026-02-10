@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lettuce-profiles
+  namespace: failover-lab
+  labels:
+    app.kubernetes.io/name: lettuce-profiles
+    app.kubernetes.io/part-of: lettuce-failover-lab
+data:
+  # Lettuce profile options:
+  # - aggressive: 10s periodic refresh, all adaptive triggers
+  # - conservative: 60s periodic refresh, MOVED redirect only
+  # - aws-recommended: 30s periodic refresh, all adaptive triggers (default)
+
+  # Profile descriptions for reference:
+  #
+  # AGGRESSIVE:
+  #   - Periodic refresh: 10 seconds
+  #   - Adaptive triggers: ALL (MOVED, ASK, PERSISTENT_RECONNECTS, UNCOVERED_SLOT, UNKNOWN_NODE)
+  #   - Adaptive timeout: 5 seconds
+  #   - Reconnect attempts trigger: 3
+  #   - Dynamic refresh sources: enabled
+  #   - Close stale connections: enabled
+  #   Best for: Low-latency applications that need fastest possible failover detection
+  #
+  # CONSERVATIVE:
+  #   - Periodic refresh: 60 seconds
+  #   - Adaptive triggers: MOVED_REDIRECT only
+  #   - Adaptive timeout: 30 seconds
+  #   - Reconnect attempts trigger: 5
+  #   - Dynamic refresh sources: disabled
+  #   - Close stale connections: disabled
+  #   Best for: Stable clusters with infrequent topology changes
+  #
+  # AWS-RECOMMENDED:
+  #   - Periodic refresh: 30 seconds
+  #   - Adaptive triggers: ALL
+  #   - Adaptive timeout: 15 seconds
+  #   - Reconnect attempts trigger: 3
+  #   - Dynamic refresh sources: enabled
+  #   - Close stale connections: enabled
+  #   Best for: Most ElastiCache deployments, balanced between responsiveness and stability
+
+  LETTUCE_PROFILE: "aws-recommended"
+
+---
+# ConfigMap for aggressive profile testing
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lettuce-profile-aggressive
+  namespace: failover-lab
+data:
+  LETTUCE_PROFILE: "aggressive"
+
+---
+# ConfigMap for conservative profile testing
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lettuce-profile-conservative
+  namespace: failover-lab
+data:
+  LETTUCE_PROFILE: "conservative"
+
+---
+# ConfigMap for AWS recommended profile testing
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lettuce-profile-aws-recommended
+  namespace: failover-lab
+data:
+  LETTUCE_PROFILE: "aws-recommended"

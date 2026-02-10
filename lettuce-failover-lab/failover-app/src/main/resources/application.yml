@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: failover-lab
+
+# Redis configuration
+redis:
+  cluster:
+    endpoint: ${REDIS_CLUSTER_ENDPOINT:localhost:6379}
+    ssl-enabled: ${REDIS_SSL_ENABLED:true}
+
+# Workload configuration
+workload:
+  mode: ${WORKLOAD_MODE:both}  # producer, consumer, or both
+  types: ${WORKLOAD_TYPES:getset,pubsub,streams}  # comma-separated
+  ops-per-second: ${OPS_PER_SECOND:100}
+  message-size-bytes: ${MESSAGE_SIZE_BYTES:256}
+
+# Lettuce profile (aggressive, conservative, aws-recommended)
+lettuce:
+  profile: ${LETTUCE_PROFILE:aws-recommended}
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      cloudwatch:
+        enabled: ${CLOUDWATCH_ENABLED:true}
+        namespace: FailoverLab
+        step: 10s
+
+# Logging
+logging:
+  level:
+    com.example.failoverlab: INFO
+    io.lettuce.core: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

@@ -1,0 +1,10 @@
+# Example Pulumi configuration file
+# Copy this to Pulumi.dev.yaml and update with your values
+
+config:
+  aws:region: us-east-1
+  lettuce-failover-lab:vpcId: vpc-xxxxxxxx
+  lettuce-failover-lab:privateSubnetIds:
+    - subnet-xxxxxxxx  # AZ-a
+    - subnet-yyyyyyyy  # AZ-b
+    - subnet-zzzzzzzz  # AZ-c

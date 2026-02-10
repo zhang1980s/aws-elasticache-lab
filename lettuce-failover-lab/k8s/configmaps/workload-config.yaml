@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: workload-config
+  namespace: failover-lab
+  labels:
+    app.kubernetes.io/name: workload-config
+    app.kubernetes.io/part-of: lettuce-failover-lab
+data:
+  # Workload mode: producer, consumer, or both
+  WORKLOAD_MODE: "both"
+
+  # Workload types to enable (comma-separated): getset, pubsub, streams
+  WORKLOAD_TYPES: "getset,pubsub,streams"
+
+  # Operations per second
+  OPS_PER_SECOND: "100"
+
+  # Message payload size in bytes
+  MESSAGE_SIZE_BYTES: "256"
+
+  # Enable CloudWatch metrics export
+  CLOUDWATCH_ENABLED: "true"
+
+  # Enable SSL/TLS for Redis connection
+  REDIS_SSL_ENABLED: "true"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: producer-config
+  namespace: failover-lab
+  labels:
+    app.kubernetes.io/name: producer-config
+    app.kubernetes.io/part-of: lettuce-failover-lab
+data:
+  WORKLOAD_MODE: "producer"
+  WORKLOAD_TYPES: "getset,pubsub,streams"
+  OPS_PER_SECOND: "100"
+  MESSAGE_SIZE_BYTES: "256"
+  CLOUDWATCH_ENABLED: "true"
+  REDIS_SSL_ENABLED: "true"
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: consumer-config
+  namespace: failover-lab
+  labels:
+    app.kubernetes.io/name: consumer-config
+    app.kubernetes.io/part-of: lettuce-failover-lab
+data:
+  WORKLOAD_MODE: "consumer"
+  WORKLOAD_TYPES: "getset,pubsub,streams"
+  OPS_PER_SECOND: "100"
+  MESSAGE_SIZE_BYTES: "256"
+  CLOUDWATCH_ENABLED: "true"
+  REDIS_SSL_ENABLED: "true"

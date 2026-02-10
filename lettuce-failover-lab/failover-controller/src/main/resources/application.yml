@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: failover-controller
+
+server:
+  port: 8080
+
+# ElastiCache configuration
+elasticache:
+  replication-group-id: ${ELASTICACHE_REPLICATION_GROUP_ID:failover-lab}
+
+# Actuator endpoints
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+# Logging
+logging:
+  level:
+    com.example.controller: INFO
+    software.amazon.awssdk: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
