@@ -33,6 +33,7 @@ This lab tests Lettuce Redis client behavior during ElastiCache failover events.
 | **EKS Nodes** | m7g.large (Graviton3 ARM64), 3 nodes across AZs |
 | **ElastiCache** | Redis 7.1, 3 shards x 1 replica (6 nodes) |
 | **ElastiCache Nodes** | cache.r7g.large (Graviton) |
+| **Docker Images** | amazoncorretto:17 (multi-arch ARM64/x86_64) |
 
 ## Prerequisites
 
