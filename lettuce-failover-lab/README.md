@@ -39,14 +39,26 @@ This lab tests Lettuce Redis client behavior during ElastiCache failover events.
 
 ### 1. Deploy Infrastructure
 
+The infrastructure is split into two Pulumi stacks for better lifecycle management:
+
 ```bash
-cd infrastructure
-
-# Configure VPC and subnet IDs
+# Step 1: Deploy network stack (security groups)
+cd infrastructure/network
+pulumi stack init dev
 pulumi config set vpcId vpc-xxxxxxxx
-pulumi config set privateSubnetIds '["subnet-1", "subnet-2", "subnet-3"]'
+pulumi up
 
-# Deploy
+# Note the outputs:
+# eksSecurityGroupId: sg-xxxxxxxx
+# redisSecurityGroupId: sg-yyyyyyyy
+
+# Step 2: Deploy lab stack (EKS + ElastiCache)
+cd ../lab
+pulumi stack init dev
+pulumi config set vpcId vpc-xxxxxxxx
+pulumi config set eksSecurityGroupId sg-xxxxxxxx      # from network stack
+pulumi config set redisSecurityGroupId sg-yyyyyyyy   # from network stack
+pulumi config set privateSubnetIds '["subnet-1", "subnet-2", "subnet-3"]'
 pulumi up
 ```
 
@@ -74,7 +86,8 @@ docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/failover-controller:lat
 aws eks update-kubeconfig --name failover-lab-eks --region us-east-1
 
 # Update Redis endpoint ConfigMap with actual endpoint
-# Get endpoint from Pulumi output
+# Get endpoint from lab stack output
+cd infrastructure/lab
 REDIS_ENDPOINT=$(pulumi stack output redisClusterEndpoint)
 kubectl create configmap redis-endpoint -n failover-lab \
   --from-literal=REDIS_CLUSTER_ENDPOINT="${REDIS_ENDPOINT}:6379" \
@@ -185,8 +198,12 @@ Configure via `k8s/configmaps/workload-config.yaml`:
 # Delete Kubernetes resources
 kubectl delete namespace failover-lab
 
-# Destroy infrastructure
-cd infrastructure
+# Destroy lab stack first (EKS + ElastiCache)
+cd infrastructure/lab
+pulumi destroy
+
+# Then destroy network stack (security groups)
+cd ../network
 pulumi destroy
 ```
 
@@ -194,15 +211,19 @@ pulumi destroy
 
 ```
 lettuce-failover-lab/
-├── infrastructure/           # Pulumi Go infrastructure
-│   ├── main.go
-│   ├── go.mod
-│   ├── Pulumi.yaml
-│   └── pkg/
-│       ├── elasticache.go
-│       ├── eks.go
-│       ├── network.go
-│       └── monitoring.go
+├── infrastructure/
+│   ├── network/              # Stack 1: Shared security groups
+│   │   ├── main.go
+│   │   ├── go.mod
+│   │   └── Pulumi.yaml
+│   └── lab/                  # Stack 2: EKS + ElastiCache
+│       ├── main.go
+│       ├── go.mod
+│       ├── Pulumi.yaml
+│       └── pkg/
+│           ├── eks.go
+│           ├── elasticache.go
+│           └── monitoring.go
 ├── failover-app/             # Spring Boot workload app
 │   ├── pom.xml
 │   ├── Dockerfile

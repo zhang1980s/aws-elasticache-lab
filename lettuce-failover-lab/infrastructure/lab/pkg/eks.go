@@ -15,7 +15,9 @@ type EKSResult struct {
 }
 
 // CreateEKSCluster creates an EKS cluster with managed node groups across 3 AZs
-func CreateEKSCluster(ctx *pulumi.Context, vpcId string, subnetIds []string, securityGroup pulumi.IDOutput) (*EKSResult, error) {
+// eksSecurityGroupId is passed from the network stack but not directly used here
+// (EKS component creates its own security groups)
+func CreateEKSCluster(ctx *pulumi.Context, vpcId string, subnetIds []string, eksSecurityGroupId string) (*EKSResult, error) {
 	// Create IAM role for EKS cluster
 	clusterRole, err := iam.NewRole(ctx, "failover-lab-eks-cluster-role", &iam.RoleArgs{
 		AssumeRolePolicy: pulumi.String(`{

@@ -1,0 +1,6 @@
+name: failover-lab-network
+runtime: go
+description: Shared network infrastructure (Security Groups) for ElastiCache labs
+
+config:
+  aws:region: us-east-1

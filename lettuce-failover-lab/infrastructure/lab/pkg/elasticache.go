@@ -11,7 +11,8 @@ type ElastiCacheResult struct {
 }
 
 // CreateElastiCacheCluster creates a 3-shard Redis cluster with 1 replica per shard
-func CreateElastiCacheCluster(ctx *pulumi.Context, subnetIds []string, securityGroup pulumi.IDOutput) (*ElastiCacheResult, error) {
+// redisSecurityGroupId is passed from the network stack
+func CreateElastiCacheCluster(ctx *pulumi.Context, subnetIds []string, redisSecurityGroupId string) (*ElastiCacheResult, error) {
 	// Create subnet group for ElastiCache
 	subnetGroup, err := elasticache.NewSubnetGroup(ctx, "failover-lab-subnet-group", &elasticache.SubnetGroupArgs{
 		Name:        pulumi.String("failover-lab-subnet-group"),
@@ -51,9 +52,9 @@ func CreateElastiCacheCluster(ctx *pulumi.Context, subnetIds []string, securityG
 		Description:        pulumi.String("Redis cluster for Lettuce failover testing"),
 
 		// Node configuration
-		NodeType:          pulumi.String("cache.r7g.large"),
-		Engine:            pulumi.String("redis"),
-		EngineVersion:     pulumi.String("7.1"),
+		NodeType:           pulumi.String("cache.r7g.large"),
+		Engine:             pulumi.String("redis"),
+		EngineVersion:      pulumi.String("7.1"),
 		ParameterGroupName: parameterGroup.Name,
 
 		// Cluster mode configuration
@@ -64,7 +65,7 @@ func CreateElastiCacheCluster(ctx *pulumi.Context, subnetIds []string, securityG
 		// Network configuration
 		SubnetGroupName: subnetGroup.Name,
 		SecurityGroupIds: pulumi.StringArray{
-			securityGroup.ToStringOutput(),
+			pulumi.String(redisSecurityGroupId),
 		},
 
 		// High availability
@@ -72,7 +73,7 @@ func CreateElastiCacheCluster(ctx *pulumi.Context, subnetIds []string, securityG
 		MultiAzEnabled:           pulumi.Bool(true),
 
 		// Encryption
-		AtRestEncryptionEnabled: pulumi.Bool(true),
+		AtRestEncryptionEnabled:  pulumi.Bool(true),
 		TransitEncryptionEnabled: pulumi.Bool(true),
 
 		// Maintenance

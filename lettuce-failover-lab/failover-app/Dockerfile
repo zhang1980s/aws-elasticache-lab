@@ -1,9 +1,9 @@
-FROM amazoncorretto:17-alpine AS builder
+FROM amazoncorretto:17 AS builder
 
 WORKDIR /app
 
 # Install Maven
-RUN apk add --no-cache maven
+RUN yum install -y maven && yum clean all
 
 # Copy pom.xml
 COPY pom.xml .
@@ -17,15 +17,15 @@ COPY src src
 # Build the application
 RUN mvn package -DskipTests -B
 
-FROM amazoncorretto:17-alpine
+FROM amazoncorretto:17
 
 WORKDIR /app
 
 # Install curl for health checks
-RUN apk add --no-cache curl
+RUN yum install -y curl && yum clean all
 
 # Create non-root user
-RUN addgroup -g 1000 appgroup && adduser -u 1000 -G appgroup -D appuser
+RUN groupadd -g 1000 appgroup && useradd -u 1000 -g appgroup appuser
 USER appuser
 
 # Copy the built JAR

@@ -1,0 +1,6 @@
+# Example Pulumi configuration for network stack
+# Copy this to Pulumi.dev.yaml and update with your values
+
+config:
+  aws:region: us-east-1
+  failover-lab-network:vpcId: vpc-xxxxxxxx

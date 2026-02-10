@@ -1,7 +1,7 @@
 package main
 
 import (
-	"lettuce-failover-lab/pkg"
+	"failover-lab/pkg"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
@@ -13,28 +13,24 @@ func main() {
 
 		// Get configuration values
 		vpcId := cfg.Require("vpcId")
-		privateSubnetIds := cfg.RequireObject("privateSubnetIds").([]interface{})
+		eksSecurityGroupId := cfg.Require("eksSecurityGroupId")
+		redisSecurityGroupId := cfg.Require("redisSecurityGroupId")
 
-		// Convert subnet IDs to string slice
+		// Get private subnet IDs
+		privateSubnetIds := cfg.RequireObject("privateSubnetIds").([]interface{})
 		subnetIds := make([]string, len(privateSubnetIds))
 		for i, id := range privateSubnetIds {
 			subnetIds[i] = id.(string)
 		}
 
-		// Create networking resources (security groups)
-		networkResult, err := pkg.CreateNetworkResources(ctx, vpcId, subnetIds)
-		if err != nil {
-			return err
-		}
-
 		// Create EKS cluster
-		eksResult, err := pkg.CreateEKSCluster(ctx, vpcId, subnetIds, networkResult.EksSecurityGroup)
+		eksResult, err := pkg.CreateEKSCluster(ctx, vpcId, subnetIds, eksSecurityGroupId)
 		if err != nil {
 			return err
 		}
 
 		// Create ElastiCache Redis cluster
-		elasticacheResult, err := pkg.CreateElastiCacheCluster(ctx, subnetIds, networkResult.RedisSecurityGroup)
+		elasticacheResult, err := pkg.CreateElastiCacheCluster(ctx, subnetIds, redisSecurityGroupId)
 		if err != nil {
 			return err
 		}

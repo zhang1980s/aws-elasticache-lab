@@ -1,0 +1,17 @@
+# Example Pulumi configuration for lab stack
+# Copy this to Pulumi.dev.yaml and update with your values
+#
+# First deploy the network stack to get security group IDs:
+#   cd ../network && pulumi up
+#   pulumi stack output eksSecurityGroupId
+#   pulumi stack output redisSecurityGroupId
+
+config:
+  aws:region: us-east-1
+  failover-lab:vpcId: vpc-xxxxxxxx
+  failover-lab:eksSecurityGroupId: sg-xxxxxxxx    # From network stack output
+  failover-lab:redisSecurityGroupId: sg-yyyyyyyy  # From network stack output
+  failover-lab:privateSubnetIds:
+    - subnet-xxxxxxxx  # AZ-a
+    - subnet-yyyyyyyy  # AZ-b
+    - subnet-zzzzzzzz  # AZ-c

@@ -1,0 +1,6 @@
+name: failover-lab
+runtime: go
+description: Lettuce Failover Lab - EKS cluster + ElastiCache Redis cluster
+
+config:
+  aws:region: us-east-1

@@ -8,13 +8,21 @@ This lab tests Lettuce Redis client behavior during ElastiCache failover events,
 
 ## Build Commands
 
-### Infrastructure (Pulumi Go)
+### Infrastructure (Pulumi Go - Multi-Stack)
 ```bash
-cd infrastructure
-go mod tidy                    # Download dependencies
-pulumi preview                 # Preview changes
-pulumi up                      # Deploy infrastructure
-pulumi destroy                 # Tear down infrastructure
+# Network stack (deploy first)
+cd infrastructure/network
+go mod tidy
+pulumi up
+
+# Lab stack (deploy second, uses network stack outputs)
+cd infrastructure/lab
+go mod tidy
+pulumi up
+
+# Teardown (reverse order)
+cd infrastructure/lab && pulumi destroy
+cd infrastructure/network && pulumi destroy
 ```
 
 ### Java Applications (Spring Boot)
@@ -51,7 +59,9 @@ kubectl apply -f services/
 ## Architecture Overview
 
 ```
-├── infrastructure/      # Pulumi Go - creates EKS + ElastiCache (3 shards x 1 replica)
+├── infrastructure/
+│   ├── network/         # Stack 1: Security groups (shared, rarely changes)
+│   └── lab/             # Stack 2: EKS + ElastiCache (lab-specific)
 ├── failover-app/        # Spring Boot - producer/consumer workloads with Lettuce
 ├── failover-controller/ # Spring Boot - REST API to trigger AWS TestFailover
 └── k8s/                 # Kubernetes manifests with AZ-aware scheduling
@@ -59,24 +69,28 @@ kubectl apply -f services/
 
 ### Key Design Decisions
 
-1. **Lettuce Profiles** (`LettuceConfig.java`): Three configurable topology refresh strategies:
+1. **Multi-Stack Infrastructure**: Network stack (security groups) separated from lab stack (EKS + ElastiCache) for independent lifecycle management and reusability.
+
+2. **Lettuce Profiles** (`LettuceConfig.java`): Three configurable topology refresh strategies:
    - `aggressive`: 10s refresh, all adaptive triggers
    - `conservative`: 60s refresh, MOVED redirect only
    - `aws-recommended`: 30s refresh, all adaptive triggers (default)
 
-2. **Workload Separation**: Producer and consumer run as separate pods to isolate failure analysis and enable AZ-aware testing.
+3. **Workload Separation**: Producer and consumer run as separate pods to isolate failure analysis and enable AZ-aware testing.
 
-3. **Metrics Collection** (`FailoverMetrics.java`): Custom Micrometer metrics exported to CloudWatch namespace `FailoverLab`.
+4. **Metrics Collection** (`FailoverMetrics.java`): Custom Micrometer metrics exported to CloudWatch namespace `FailoverLab`.
 
-4. **Environment-driven Configuration**: All runtime behavior controlled via ConfigMaps and environment variables (`WORKLOAD_MODE`, `LETTUCE_PROFILE`, `OPS_PER_SECOND`).
+5. **Environment-driven Configuration**: All runtime behavior controlled via ConfigMaps and environment variables (`WORKLOAD_MODE`, `LETTUCE_PROFILE`, `OPS_PER_SECOND`).
 
 ## Key Files
 
 | Purpose | File |
 |---------|------|
+| Security groups | `infrastructure/network/main.go` |
+| EKS cluster setup | `infrastructure/lab/pkg/eks.go` |
+| ElastiCache cluster setup | `infrastructure/lab/pkg/elasticache.go` |
+| CloudWatch dashboard | `infrastructure/lab/pkg/monitoring.go` |
 | Lettuce client configuration | `failover-app/.../config/LettuceConfig.java` |
 | Failover metrics tracking | `failover-app/.../metrics/FailoverMetrics.java` |
 | Connection event monitoring | `failover-app/.../monitor/ConnectionMonitor.java` |
 | AWS TestFailover API | `failover-controller/.../FailoverController.java` |
-| ElastiCache cluster setup | `infrastructure/pkg/elasticache.go` |
-| CloudWatch dashboard | `infrastructure/pkg/monitoring.go` |
