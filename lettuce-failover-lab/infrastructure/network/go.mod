@@ -1,4 +1,4 @@
-module failover-lab-network
+module redis-failover-lab-network
 
 go 1.24
 

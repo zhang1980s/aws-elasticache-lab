@@ -41,7 +41,7 @@ public class PubSubWorkload {
     private boolean enabled = false;
     private boolean subscribed = false;
 
-    private static final String CHANNEL_PREFIX = "failover-lab:channel:";
+    private static final String CHANNEL_PREFIX = "redis-failover-lab:channel:";
     private static final String CHANNEL_NAME = CHANNEL_PREFIX + "main";
 
     private final AtomicLong publishedCount = new AtomicLong(0);

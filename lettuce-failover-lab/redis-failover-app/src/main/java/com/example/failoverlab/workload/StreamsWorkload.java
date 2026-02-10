@@ -48,8 +48,8 @@ public class StreamsWorkload {
     private boolean enabled = false;
     private boolean consumerGroupCreated = false;
 
-    private static final String STREAM_KEY = "failover-lab:stream:main";
-    private static final String CONSUMER_GROUP = "failover-lab-consumers";
+    private static final String STREAM_KEY = "redis-failover-lab:stream:main";
+    private static final String CONSUMER_GROUP = "redis-failover-lab-consumers";
 
     private final AtomicLong addedCount = new AtomicLong(0);
     private final AtomicLong consumedCount = new AtomicLong(0);

@@ -27,24 +27,24 @@ cd infrastructure/network && pulumi destroy
 
 ### Java Applications (Spring Boot)
 ```bash
-# failover-app
-cd failover-app
+# redis-failover-app
+cd redis-failover-app
 mvn clean package -DskipTests  # Build JAR
 mvn spring-boot:run            # Run locally (requires Redis endpoint)
 
-# failover-controller
-cd failover-controller
+# redis-failover-controller
+cd redis-failover-controller
 mvn clean package -DskipTests  # Build JAR
 mvn spring-boot:run            # Run locally
 ```
 
 ### Docker Images
 ```bash
-cd failover-app
-docker build -t failover-app:latest .
+cd redis-failover-app
+docker build -t redis-failover-app:latest .
 
-cd failover-controller
-docker build -t failover-controller:latest .
+cd redis-failover-controller
+docker build -t redis-failover-controller:latest .
 ```
 
 ### Kubernetes Deployment
@@ -62,8 +62,8 @@ kubectl apply -f services/
 ├── infrastructure/
 │   ├── network/         # Stack 1: Security groups (shared, rarely changes)
 │   └── lab/             # Stack 2: EKS + ElastiCache (lab-specific)
-├── failover-app/        # Spring Boot - producer/consumer workloads with Lettuce
-├── failover-controller/ # Spring Boot - REST API to trigger AWS TestFailover
+├── redis-failover-app/        # Spring Boot - producer/consumer workloads with Lettuce
+├── redis-failover-controller/ # Spring Boot - REST API to trigger AWS TestFailover
 └── k8s/                 # Kubernetes manifests with AZ-aware scheduling
 ```
 
@@ -78,7 +78,7 @@ kubectl apply -f services/
 
 3. **Workload Separation**: Producer and consumer run as separate pods to isolate failure analysis and enable AZ-aware testing.
 
-4. **Metrics Collection** (`FailoverMetrics.java`): Custom Micrometer metrics exported to CloudWatch namespace `FailoverLab`.
+4. **Metrics Collection** (`FailoverMetrics.java`): Custom Micrometer metrics exported to CloudWatch namespace `RedisFailoverLab`.
 
 5. **Environment-driven Configuration**: All runtime behavior controlled via ConfigMaps and environment variables (`WORKLOAD_MODE`, `LETTUCE_PROFILE`, `OPS_PER_SECOND`).
 
@@ -90,7 +90,7 @@ kubectl apply -f services/
 | EKS cluster setup | `infrastructure/lab/pkg/eks.go` |
 | ElastiCache cluster setup | `infrastructure/lab/pkg/elasticache.go` |
 | CloudWatch dashboard | `infrastructure/lab/pkg/monitoring.go` |
-| Lettuce client configuration | `failover-app/.../config/LettuceConfig.java` |
-| Failover metrics tracking | `failover-app/.../metrics/FailoverMetrics.java` |
-| Connection event monitoring | `failover-app/.../monitor/ConnectionMonitor.java` |
-| AWS TestFailover API | `failover-controller/.../FailoverController.java` |
+| Lettuce client configuration | `redis-failover-app/.../config/LettuceConfig.java` |
+| Failover metrics tracking | `redis-failover-app/.../metrics/FailoverMetrics.java` |
+| Connection event monitoring | `redis-failover-app/.../monitor/ConnectionMonitor.java` |
+| AWS TestFailover API | `redis-failover-controller/.../FailoverController.java` |

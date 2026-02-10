@@ -13,7 +13,7 @@
     </parent>
 
     <groupId>com.example</groupId>
-    <artifactId>failover-app</artifactId>
+    <artifactId>redis-failover-app</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 

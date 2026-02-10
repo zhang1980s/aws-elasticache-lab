@@ -1,4 +1,4 @@
-name: failover-lab
+name: redis-failover-lab
 runtime: go
 description: Lettuce Failover Lab - EKS cluster + ElastiCache Redis cluster
 

@@ -78,30 +78,30 @@ pulumi up
 # Get ECR repository (create one if needed)
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
 
-# Build and push failover-app
-cd failover-app
-docker build -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/failover-app:latest .
-docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/failover-app:latest
+# Build and push redis-failover-app
+cd redis-failover-app
+docker build -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/redis-failover-app:latest .
+docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/redis-failover-app:latest
 
-# Build and push failover-controller
-cd ../failover-controller
-docker build -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/failover-controller:latest .
-docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/failover-controller:latest
+# Build and push redis-failover-controller
+cd ../redis-failover-controller
+docker build -t <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/redis-failover-controller:latest .
+docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/redis-failover-controller:latest
 ```
 
 ### 3. Configure Kubernetes
 
 ```bash
 # Get kubeconfig
-aws eks update-kubeconfig --name failover-lab-eks --region us-east-1
+aws eks update-kubeconfig --name redis-redis-failover-lab-eks --region us-east-1
 
 # Update Redis endpoint ConfigMap with actual endpoint
 # Get endpoint from lab stack output
 cd infrastructure/lab
 REDIS_ENDPOINT=$(pulumi stack output redisClusterEndpoint)
-kubectl create configmap redis-endpoint -n failover-lab \
+kubectl create configmap redis-endpoint -n redis-failover-lab \
   --from-literal=REDIS_CLUSTER_ENDPOINT="${REDIS_ENDPOINT}:6379" \
-  --from-literal=ELASTICACHE_REPLICATION_GROUP_ID="failover-lab" \
+  --from-literal=ELASTICACHE_REPLICATION_GROUP_ID="redis-failover-lab" \
   --dry-run=client -o yaml | kubectl apply -f -
 ```
 
@@ -127,11 +127,11 @@ kubectl apply -f services/
 
 ```bash
 # Check pods
-kubectl get pods -n failover-lab
+kubectl get pods -n redis-failover-lab
 
 # Check logs
-kubectl logs -f deployment/failover-producer -n failover-lab
-kubectl logs -f deployment/failover-consumer -n failover-lab
+kubectl logs -f deployment/redis-failover-producer -n redis-failover-lab
+kubectl logs -f deployment/redis-failover-consumer -n redis-failover-lab
 ```
 
 ## Running Failover Tests
@@ -140,7 +140,7 @@ kubectl logs -f deployment/failover-consumer -n failover-lab
 
 ```bash
 # Port-forward to controller
-kubectl port-forward svc/failover-controller 8080:8080 -n failover-lab &
+kubectl port-forward svc/redis-failover-controller 8080:8080 -n redis-failover-lab &
 
 # Trigger failover for shard 1
 curl -X POST http://localhost:8080/api/failover/1
@@ -154,7 +154,7 @@ curl http://localhost:8080/api/metrics
 
 ### Monitor Metrics
 
-View the CloudWatch dashboard "FailoverLab-Dashboard" for:
+View the CloudWatch dashboard "RedisFailoverLab-Dashboard" for:
 - Connection drop duration
 - Topology refresh count
 - Operations failed during failover
@@ -206,7 +206,7 @@ Configure via `k8s/configmaps/workload-config.yaml`:
 
 ```bash
 # Delete Kubernetes resources
-kubectl delete namespace failover-lab
+kubectl delete namespace redis-failover-lab
 
 # Destroy lab stack first (EKS + ElastiCache)
 cd infrastructure/lab
@@ -220,7 +220,7 @@ pulumi destroy
 ## Project Structure
 
 ```
-lettuce-failover-lab/
+lettuce-redis-failover-lab/
 ├── infrastructure/
 │   ├── network/              # Stack 1: Shared security groups
 │   │   ├── main.go
@@ -234,7 +234,7 @@ lettuce-failover-lab/
 │           ├── eks.go
 │           ├── elasticache.go
 │           └── monitoring.go
-├── failover-app/             # Spring Boot workload app
+├── redis-failover-app/             # Spring Boot workload app
 │   ├── pom.xml
 │   ├── Dockerfile
 │   └── src/main/java/.../
@@ -242,7 +242,7 @@ lettuce-failover-lab/
 │       ├── workload/
 │       ├── monitor/
 │       └── metrics/
-├── failover-controller/      # Failover trigger API
+├── redis-failover-controller/      # Failover trigger API
 │   ├── pom.xml
 │   ├── Dockerfile
 │   └── src/main/java/.../

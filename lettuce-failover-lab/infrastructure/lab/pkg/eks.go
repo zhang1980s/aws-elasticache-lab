@@ -19,7 +19,7 @@ type EKSResult struct {
 // (EKS component creates its own security groups)
 func CreateEKSCluster(ctx *pulumi.Context, vpcId string, subnetIds []string, eksSecurityGroupId string) (*EKSResult, error) {
 	// Create IAM role for EKS cluster
-	clusterRole, err := iam.NewRole(ctx, "failover-lab-eks-cluster-role", &iam.RoleArgs{
+	clusterRole, err := iam.NewRole(ctx, "redis-failover-lab-eks-cluster-role", &iam.RoleArgs{
 		AssumeRolePolicy: pulumi.String(`{
 			"Version": "2012-10-17",
 			"Statement": [{
@@ -31,7 +31,7 @@ func CreateEKSCluster(ctx *pulumi.Context, vpcId string, subnetIds []string, eks
 			}]
 		}`),
 		Tags: pulumi.StringMap{
-			"Name": pulumi.String("failover-lab-eks-cluster-role"),
+			"Name": pulumi.String("redis-failover-lab-eks-cluster-role"),
 		},
 	})
 	if err != nil {
@@ -48,7 +48,7 @@ func CreateEKSCluster(ctx *pulumi.Context, vpcId string, subnetIds []string, eks
 	}
 
 	// Create IAM role for worker nodes
-	nodeRole, err := iam.NewRole(ctx, "failover-lab-eks-node-role", &iam.RoleArgs{
+	nodeRole, err := iam.NewRole(ctx, "redis-failover-lab-eks-node-role", &iam.RoleArgs{
 		AssumeRolePolicy: pulumi.String(`{
 			"Version": "2012-10-17",
 			"Statement": [{
@@ -60,7 +60,7 @@ func CreateEKSCluster(ctx *pulumi.Context, vpcId string, subnetIds []string, eks
 			}]
 		}`),
 		Tags: pulumi.StringMap{
-			"Name": pulumi.String("failover-lab-eks-node-role"),
+			"Name": pulumi.String("redis-failover-lab-eks-node-role"),
 		},
 	})
 	if err != nil {
@@ -85,7 +85,7 @@ func CreateEKSCluster(ctx *pulumi.Context, vpcId string, subnetIds []string, eks
 	}
 
 	// Create custom policy for ElastiCache failover testing
-	elasticachePolicy, err := iam.NewPolicy(ctx, "failover-lab-elasticache-policy", &iam.PolicyArgs{
+	elasticachePolicy, err := iam.NewPolicy(ctx, "redis-failover-lab-elasticache-policy", &iam.PolicyArgs{
 		Description: pulumi.String("Policy for ElastiCache failover testing"),
 		Policy: pulumi.String(`{
 			"Version": "2012-10-17",
@@ -136,7 +136,7 @@ func CreateEKSCluster(ctx *pulumi.Context, vpcId string, subnetIds []string, eks
 	}
 
 	// Create instance profile for nodes
-	instanceProfile, err := iam.NewInstanceProfile(ctx, "failover-lab-eks-instance-profile", &iam.InstanceProfileArgs{
+	instanceProfile, err := iam.NewInstanceProfile(ctx, "redis-failover-lab-eks-instance-profile", &iam.InstanceProfileArgs{
 		Role: nodeRole.Name,
 	})
 	if err != nil {
@@ -146,7 +146,7 @@ func CreateEKSCluster(ctx *pulumi.Context, vpcId string, subnetIds []string, eks
 	// Create EKS cluster using pulumi-eks component
 	// Using Graviton3 (ARM64) with Bottlerocket OS for better price/performance
 	// Kubernetes 1.32 - most mature version in standard support
-	cluster, err := eks.NewCluster(ctx, "failover-lab-eks", &eks.ClusterArgs{
+	cluster, err := eks.NewCluster(ctx, "redis-failover-lab-eks", &eks.ClusterArgs{
 		VpcId:                        pulumi.String(vpcId),
 		SubnetIds:                    pulumi.ToStringArray(subnetIds),
 		Version:                      pulumi.String("1.32"),
@@ -160,7 +160,7 @@ func CreateEKSCluster(ctx *pulumi.Context, vpcId string, subnetIds []string, eks
 		ServiceRole:                  clusterRole,
 		CreateOidcProvider:           pulumi.Bool(true),
 		Tags: pulumi.StringMap{
-			"Name":        pulumi.String("failover-lab-eks"),
+			"Name":        pulumi.String("redis-failover-lab-eks"),
 			"Environment": pulumi.String("testing"),
 		},
 	})

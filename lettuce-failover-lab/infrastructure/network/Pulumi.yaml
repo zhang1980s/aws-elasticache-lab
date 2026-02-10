@@ -1,4 +1,4 @@
-name: failover-lab-network
+name: redis-failover-lab-network
 runtime: go
 description: Shared network infrastructure (Security Groups) for ElastiCache labs
 

@@ -14,12 +14,12 @@ type ElastiCacheResult struct {
 // redisSecurityGroupId is passed from the network stack
 func CreateElastiCacheCluster(ctx *pulumi.Context, subnetIds []string, redisSecurityGroupId string) (*ElastiCacheResult, error) {
 	// Create subnet group for ElastiCache
-	subnetGroup, err := elasticache.NewSubnetGroup(ctx, "failover-lab-subnet-group", &elasticache.SubnetGroupArgs{
-		Name:        pulumi.String("failover-lab-subnet-group"),
+	subnetGroup, err := elasticache.NewSubnetGroup(ctx, "redis-failover-lab-subnet-group", &elasticache.SubnetGroupArgs{
+		Name:        pulumi.String("redis-failover-lab-subnet-group"),
 		Description: pulumi.String("Subnet group for Failover Lab Redis cluster"),
 		SubnetIds:   pulumi.ToStringArray(subnetIds),
 		Tags: pulumi.StringMap{
-			"Name": pulumi.String("failover-lab-subnet-group"),
+			"Name": pulumi.String("redis-failover-lab-subnet-group"),
 		},
 	})
 	if err != nil {
@@ -27,8 +27,8 @@ func CreateElastiCacheCluster(ctx *pulumi.Context, subnetIds []string, redisSecu
 	}
 
 	// Create parameter group for cluster mode
-	parameterGroup, err := elasticache.NewParameterGroup(ctx, "failover-lab-params", &elasticache.ParameterGroupArgs{
-		Name:        pulumi.String("failover-lab-params"),
+	parameterGroup, err := elasticache.NewParameterGroup(ctx, "redis-failover-lab-params", &elasticache.ParameterGroupArgs{
+		Name:        pulumi.String("redis-failover-lab-params"),
 		Family:      pulumi.String("redis7"),
 		Description: pulumi.String("Parameter group for Failover Lab Redis cluster"),
 		Parameters: elasticache.ParameterGroupParameterArray{
@@ -38,7 +38,7 @@ func CreateElastiCacheCluster(ctx *pulumi.Context, subnetIds []string, redisSecu
 			},
 		},
 		Tags: pulumi.StringMap{
-			"Name": pulumi.String("failover-lab-params"),
+			"Name": pulumi.String("redis-failover-lab-params"),
 		},
 	})
 	if err != nil {
@@ -47,8 +47,8 @@ func CreateElastiCacheCluster(ctx *pulumi.Context, subnetIds []string, redisSecu
 
 	// Create ElastiCache Redis cluster
 	// 3 shards with 1 replica each = 6 nodes total
-	replicationGroup, err := elasticache.NewReplicationGroup(ctx, "failover-lab-redis", &elasticache.ReplicationGroupArgs{
-		ReplicationGroupId: pulumi.String("failover-lab"),
+	replicationGroup, err := elasticache.NewReplicationGroup(ctx, "redis-failover-lab-redis", &elasticache.ReplicationGroupArgs{
+		ReplicationGroupId: pulumi.String("redis-failover-lab"),
 		Description:        pulumi.String("Redis cluster for Lettuce failover testing"),
 
 		// Node configuration
@@ -85,7 +85,7 @@ func CreateElastiCacheCluster(ctx *pulumi.Context, subnetIds []string, redisSecu
 		ApplyImmediately: pulumi.Bool(true),
 
 		Tags: pulumi.StringMap{
-			"Name":        pulumi.String("failover-lab-redis"),
+			"Name":        pulumi.String("redis-failover-lab-redis"),
 			"Environment": pulumi.String("testing"),
 			"Purpose":     pulumi.String("lettuce-failover-testing"),
 		},

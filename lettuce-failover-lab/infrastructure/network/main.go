@@ -14,11 +14,11 @@ func main() {
 		vpcId := cfg.Require("vpcId")
 
 		// Security group for EKS nodes
-		eksSecurityGroup, err := ec2.NewSecurityGroup(ctx, "failover-lab-eks-sg", &ec2.SecurityGroupArgs{
+		eksSecurityGroup, err := ec2.NewSecurityGroup(ctx, "redis-failover-lab-eks-sg", &ec2.SecurityGroupArgs{
 			VpcId:       pulumi.String(vpcId),
 			Description: pulumi.String("Security group for Failover Lab EKS nodes"),
 			Tags: pulumi.StringMap{
-				"Name": pulumi.String("failover-lab-eks-sg"),
+				"Name": pulumi.String("redis-failover-lab-eks-sg"),
 			},
 		})
 		if err != nil {
@@ -26,11 +26,11 @@ func main() {
 		}
 
 		// Security group for ElastiCache Redis
-		redisSecurityGroup, err := ec2.NewSecurityGroup(ctx, "failover-lab-redis-sg", &ec2.SecurityGroupArgs{
+		redisSecurityGroup, err := ec2.NewSecurityGroup(ctx, "redis-failover-lab-redis-sg", &ec2.SecurityGroupArgs{
 			VpcId:       pulumi.String(vpcId),
 			Description: pulumi.String("Security group for Failover Lab ElastiCache Redis"),
 			Tags: pulumi.StringMap{
-				"Name": pulumi.String("failover-lab-redis-sg"),
+				"Name": pulumi.String("redis-failover-lab-redis-sg"),
 			},
 		})
 		if err != nil {

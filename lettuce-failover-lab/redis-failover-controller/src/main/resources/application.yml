@@ -1,13 +1,13 @@
 spring:
   application:
-    name: failover-controller
+    name: redis-failover-controller
 
 server:
   port: 8080
 
 # ElastiCache configuration
 elasticache:
-  replication-group-id: ${ELASTICACHE_REPLICATION_GROUP_ID:failover-lab}
+  replication-group-id: ${ELASTICACHE_REPLICATION_GROUP_ID:redis-failover-lab}
 
 # Actuator endpoints
 management:

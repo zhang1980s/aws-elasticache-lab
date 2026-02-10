@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: failover-lab
+  name: redis-failover-lab
   labels:
-    app.kubernetes.io/name: failover-lab
-    app.kubernetes.io/part-of: lettuce-failover-lab
+    app.kubernetes.io/name: redis-failover-lab
+    app.kubernetes.io/part-of: lettuce-redis-failover-lab

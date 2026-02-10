@@ -1,6 +1,6 @@
 spring:
   application:
-    name: failover-lab
+    name: redis-failover-lab
 
 # Redis configuration
 redis:
@@ -29,7 +29,7 @@ management:
     export:
       cloudwatch:
         enabled: ${CLOUDWATCH_ENABLED:true}
-        namespace: FailoverLab
+        namespace: RedisFailoverLab
         step: 10s
 
 # Logging

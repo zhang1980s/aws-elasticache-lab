@@ -38,8 +38,8 @@ public class GetSetWorkload {
     private boolean enabled = false;
     private long operationIntervalMs;
 
-    private static final String KEY_PREFIX = "failover-lab:getset:";
-    private static final String SEQUENCE_KEY = "failover-lab:sequence";
+    private static final String KEY_PREFIX = "redis-failover-lab:getset:";
+    private static final String SEQUENCE_KEY = "redis-failover-lab:sequence";
 
     @PostConstruct
     public void init() {

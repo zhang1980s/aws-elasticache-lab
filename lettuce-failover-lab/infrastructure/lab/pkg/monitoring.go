@@ -15,11 +15,11 @@ type MonitoringResult struct {
 // CreateMonitoring creates CloudWatch dashboard and log groups for failover monitoring
 func CreateMonitoring(ctx *pulumi.Context, replicationGroupId pulumi.StringOutput) (*MonitoringResult, error) {
 	// Create log group for application logs
-	logGroup, err := cloudwatch.NewLogGroup(ctx, "failover-lab-logs", &cloudwatch.LogGroupArgs{
-		Name:            pulumi.String("/failover-lab/application"),
+	logGroup, err := cloudwatch.NewLogGroup(ctx, "redis-failover-lab-logs", &cloudwatch.LogGroupArgs{
+		Name:            pulumi.String("/redis-failover-lab/application"),
 		RetentionInDays: pulumi.Int(7),
 		Tags: pulumi.StringMap{
-			"Name":        pulumi.String("failover-lab-logs"),
+			"Name":        pulumi.String("redis-failover-lab-logs"),
 			"Environment": pulumi.String("testing"),
 		},
 	})
@@ -109,9 +109,9 @@ func CreateMonitoring(ctx *pulumi.Context, replicationGroupId pulumi.StringOutpu
 						"view": "timeSeries",
 						"stacked": false,
 						"metrics": [
-							["FailoverLab", "connection.drop.duration.ms", {"label": "Connection Drop Duration"}],
-							["FailoverLab", "topology.refresh.count", {"label": "Topology Refresh Count"}],
-							["FailoverLab", "operations.failed.during.failover", {"label": "Failed Operations"}]
+							["RedisFailoverLab", "connection.drop.duration.ms", {"label": "Connection Drop Duration"}],
+							["RedisFailoverLab", "topology.refresh.count", {"label": "Topology Refresh Count"}],
+							["RedisFailoverLab", "operations.failed.during.failover", {"label": "Failed Operations"}]
 						],
 						"region": "us-east-1",
 						"period": 10
@@ -128,9 +128,9 @@ func CreateMonitoring(ctx *pulumi.Context, replicationGroupId pulumi.StringOutpu
 						"view": "timeSeries",
 						"stacked": false,
 						"metrics": [
-							["FailoverLab", "operations.latency.p50.ms", {"label": "P50 Latency"}],
-							["FailoverLab", "operations.latency.p99.ms", {"label": "P99 Latency"}],
-							["FailoverLab", "operations.latency.max.ms", {"label": "Max Latency"}]
+							["RedisFailoverLab", "operations.latency.p50.ms", {"label": "P50 Latency"}],
+							["RedisFailoverLab", "operations.latency.p99.ms", {"label": "P99 Latency"}],
+							["RedisFailoverLab", "operations.latency.max.ms", {"label": "Max Latency"}]
 						],
 						"region": "us-east-1",
 						"period": 10
@@ -147,9 +147,9 @@ func CreateMonitoring(ctx *pulumi.Context, replicationGroupId pulumi.StringOutpu
 						"view": "timeSeries",
 						"stacked": false,
 						"metrics": [
-							["FailoverLab", "pubsub.messages.published", {"label": "Published"}],
-							["FailoverLab", "pubsub.messages.received", {"label": "Received"}],
-							["FailoverLab", "pubsub.message.loss.count", {"label": "Lost"}]
+							["RedisFailoverLab", "pubsub.messages.published", {"label": "Published"}],
+							["RedisFailoverLab", "pubsub.messages.received", {"label": "Received"}],
+							["RedisFailoverLab", "pubsub.message.loss.count", {"label": "Lost"}]
 						],
 						"region": "us-east-1",
 						"period": 10
@@ -166,9 +166,9 @@ func CreateMonitoring(ctx *pulumi.Context, replicationGroupId pulumi.StringOutpu
 						"view": "timeSeries",
 						"stacked": false,
 						"metrics": [
-							["FailoverLab", "streams.messages.added", {"label": "Added"}],
-							["FailoverLab", "streams.messages.consumed", {"label": "Consumed"}],
-							["FailoverLab", "streams.lag.ms", {"label": "Lag (ms)"}]
+							["RedisFailoverLab", "streams.messages.added", {"label": "Added"}],
+							["RedisFailoverLab", "streams.messages.consumed", {"label": "Consumed"}],
+							["RedisFailoverLab", "streams.lag.ms", {"label": "Lag (ms)"}]
 						],
 						"region": "us-east-1",
 						"period": 10
@@ -185,9 +185,9 @@ func CreateMonitoring(ctx *pulumi.Context, replicationGroupId pulumi.StringOutpu
 						"view": "timeSeries",
 						"stacked": false,
 						"metrics": [
-							["FailoverLab", "getset.operations.success", {"label": "Success"}],
-							["FailoverLab", "getset.operations.failed", {"label": "Failed"}],
-							["FailoverLab", "getset.sequence.gaps", {"label": "Sequence Gaps"}]
+							["RedisFailoverLab", "getset.operations.success", {"label": "Success"}],
+							["RedisFailoverLab", "getset.operations.failed", {"label": "Failed"}],
+							["RedisFailoverLab", "getset.sequence.gaps", {"label": "Sequence Gaps"}]
 						],
 						"region": "us-east-1",
 						"period": 10
@@ -197,8 +197,8 @@ func CreateMonitoring(ctx *pulumi.Context, replicationGroupId pulumi.StringOutpu
 		}`, rgId, rgId, rgId, rgId, rgId, rgId, rgId, rgId, rgId)
 	}).(pulumi.StringOutput)
 
-	dashboard, err := cloudwatch.NewDashboard(ctx, "failover-lab-dashboard", &cloudwatch.DashboardArgs{
-		DashboardName: pulumi.String("FailoverLab-Dashboard"),
+	dashboard, err := cloudwatch.NewDashboard(ctx, "redis-failover-lab-dashboard", &cloudwatch.DashboardArgs{
+		DashboardName: pulumi.String("RedisFailoverLab-Dashboard"),
 		DashboardBody: dashboardBody,
 	})
 	if err != nil {

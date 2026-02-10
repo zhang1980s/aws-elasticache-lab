@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: failover-controller
-  namespace: failover-lab
+  name: redis-failover-controller
+  namespace: redis-failover-lab
   labels:
-    app.kubernetes.io/name: failover-controller
+    app.kubernetes.io/name: redis-failover-controller
     app.kubernetes.io/component: controller
-    app.kubernetes.io/part-of: lettuce-failover-lab
+    app.kubernetes.io/part-of: lettuce-redis-failover-lab
 spec:
   type: ClusterIP
   selector:
-    app.kubernetes.io/name: failover-controller
+    app.kubernetes.io/name: redis-failover-controller
   ports:
     - name: http
       port: 8080
@@ -23,11 +23,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: redis-endpoint
-  namespace: failover-lab
+  namespace: redis-failover-lab
   labels:
     app.kubernetes.io/name: redis-endpoint
-    app.kubernetes.io/part-of: lettuce-failover-lab
+    app.kubernetes.io/part-of: lettuce-redis-failover-lab
 data:
   # Update these values after running `pulumi up`
-  REDIS_CLUSTER_ENDPOINT: "failover-lab.xxxxxx.clustercfg.use1.cache.amazonaws.com:6379"
-  ELASTICACHE_REPLICATION_GROUP_ID: "failover-lab"
+  REDIS_CLUSTER_ENDPOINT: "redis-failover-lab.xxxxxx.clustercfg.use1.cache.amazonaws.com:6379"
+  ELASTICACHE_REPLICATION_GROUP_ID: "redis-failover-lab"

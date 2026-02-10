@@ -1,7 +1,7 @@
 package main
 
 import (
-	"failover-lab/pkg"
+	"redis-failover-lab/pkg"
 
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
