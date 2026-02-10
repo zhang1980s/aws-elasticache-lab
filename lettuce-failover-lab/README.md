@@ -25,6 +25,15 @@ This lab tests Lettuce Redis client behavior during ElastiCache failover events.
 - **Failover Controller (Spring Boot)**: REST API for triggering and monitoring failovers
 - **Kubernetes Manifests**: Deployment configurations with AZ-aware scheduling
 
+### Infrastructure Configuration
+
+| Component | Configuration |
+|-----------|--------------|
+| **EKS Cluster** | Kubernetes 1.32, Bottlerocket OS |
+| **EKS Nodes** | m7g.large (Graviton3 ARM64), 3 nodes across AZs |
+| **ElastiCache** | Redis 7.1, 3 shards x 1 replica (6 nodes) |
+| **ElastiCache Nodes** | cache.r7g.large (Graviton) |
+
 ## Prerequisites
 
 - AWS CLI configured with appropriate credentials
