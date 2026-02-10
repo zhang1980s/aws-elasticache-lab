@@ -54,7 +54,7 @@ The infrastructure is split into two Pulumi stacks for better lifecycle manageme
 ```bash
 # Step 1: Deploy network stack (security groups)
 cd infrastructure/network
-go mod tidy                                        # resolve Go dependencies
+# go mod tidy                                      # only needed if modifying Go code
 pulumi stack init dev
 pulumi config set vpcId vpc-xxxxxxxx
 pulumi up
@@ -65,7 +65,7 @@ pulumi up
 
 # Step 2: Deploy lab stack (EKS + ElastiCache)
 cd ../lab
-go mod tidy                                        # resolve Go dependencies
+# go mod tidy                                      # only needed if modifying Go code
 pulumi stack init dev
 pulumi config set vpcId vpc-xxxxxxxx
 pulumi config set eksSecurityGroupId sg-xxxxxxxx      # from network stack
