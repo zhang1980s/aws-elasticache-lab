@@ -144,10 +144,12 @@ func CreateEKSCluster(ctx *pulumi.Context, vpcId string, subnetIds []string, eks
 	}
 
 	// Create EKS cluster using pulumi-eks component
+	// Using Graviton3 (ARM64) with Bottlerocket OS for better price/performance
 	cluster, err := eks.NewCluster(ctx, "failover-lab-eks", &eks.ClusterArgs{
 		VpcId:                        pulumi.String(vpcId),
 		SubnetIds:                    pulumi.ToStringArray(subnetIds),
-		InstanceType:                 pulumi.String("m6i.large"),
+		InstanceType:                 pulumi.String("m7g.large"),
+		OperatingSystem:              eks.OperatingSystemBottlerocket,
 		DesiredCapacity:              pulumi.Int(3),
 		MinSize:                      pulumi.Int(3),
 		MaxSize:                      pulumi.Int(5),
